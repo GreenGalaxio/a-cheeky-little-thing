@@ -1,0 +1,120 @@
+﻿// Decompiled by AS3 Sorcerer 6.30
+// www.as3sorcerer.com
+
+//sonic_fla.sonic_dash_attack_136
+
+package sonic_fla
+{
+    import flash.display.MovieClip;
+    import com.mcleodgaming.ssf2api.core.SSF2API;
+    import flash.display.*;
+    import flash.events.*;
+    import flash.media.*;
+    import adobe.utils.*;
+    import flash.accessibility.*;
+    import flash.desktop.*;
+    import flash.errors.*;
+    import flash.external.*;
+    import flash.filters.*;
+    import flash.geom.*;
+    import flash.globalization.*;
+    import flash.net.*;
+    import flash.net.drm.*;
+    import flash.printing.*;
+    import flash.profiler.*;
+    import flash.sampler.*;
+    import flash.sensors.*;
+    import flash.system.*;
+    import flash.text.*;
+    import flash.text.ime.*;
+    import flash.text.engine.*;
+    import flash.ui.*;
+    import flash.utils.*;
+    import flash.xml.*;
+
+    public dynamic class sonic_dash_attack_136 extends MovieClip 
+    {
+
+        public var attackBox:MovieClip;
+        public var hitBox:MovieClip;
+        public var hitBox2:MovieClip;
+        public var hitBox3:MovieClip;
+        public var self:*;
+        public var playsound:Number;
+        public var audio:Number;
+
+        public function sonic_dash_attack_136()
+        {
+            addFrameScript(0, this.frame1, 2, this.frame3, 4, this.frame5, 7, this.frame8, 17, this.frame18, 21, this.frame22);
+        }
+
+        public function dashConstant():void
+        {
+            this.self.setXSpeed(5, false);
+        }
+
+        internal function frame1():*
+        {
+            this.self = SSF2API.getCharacter(this);
+            if ((((parent) && (SSF2API.isReady())) && (this.self)))
+            {
+                this.self.setXSpeed(26, false);
+                this.playsound = SSF2API.random();
+                this.audio = this.self.getGlobalVariable("audio");
+                if ((((this.playsound > 0.2) && (this.playsound <= 0.4)) && (!(this.audio == 1))))
+                {
+                    this.self.playVoiceSound(1);
+                    this.self.setGlobalVariable("audio", 1);
+                };
+                if ((((this.playsound > 0.4) && (this.playsound <= 0.6)) && (!(this.audio == 2))))
+                {
+                    this.self.playVoiceSound(2);
+                    this.self.setGlobalVariable("audio", 2);
+                };
+                if ((((this.playsound > 0.6) && (this.playsound <= 0.8)) && (!(this.audio == 3))))
+                {
+                    this.self.playVoiceSound(3);
+                    this.self.setGlobalVariable("audio", 3);
+                };
+                if ((((this.playsound > 0.8) && (this.playsound <= 1)) && (!(this.audio == 4))))
+                {
+                    this.self.playVoiceSound(4);
+                    this.self.setGlobalVariable("audio", 4);
+                };
+            };
+        }
+
+        internal function frame3():*
+        {
+            this.self.setXSpeed(15, false);
+            this.self.playAttackSound(1);
+        }
+
+        internal function frame5():*
+        {
+            this.self.updateAttackBoxStats(1, {
+                "damage":4,
+                "kbConstant":40,
+                "direction":45
+            });
+        }
+
+        internal function frame8():*
+        {
+            SSF2API.createTimer(this.self, 1, 0, this.dashConstant);
+        }
+
+        internal function frame18():*
+        {
+            this.self.setXSpeed(1, true);
+        }
+
+        internal function frame22():*
+        {
+            this.self.endAttack();
+        }
+
+
+    }
+}//package sonic_fla
+

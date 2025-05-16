@@ -1,0 +1,197 @@
+﻿// Decompiled by AS3 Sorcerer 6.30
+// www.as3sorcerer.com
+
+//kirby_fla.kirby_item_64
+
+package kirby_fla
+{
+    import flash.display.MovieClip;
+    import com.mcleodgaming.ssf2api.core.SSF2API;
+    import com.mcleodgaming.ssf2api.core.SSF2Event;
+    import flash.geom.*;
+    import flash.display.*;
+    import flash.events.*;
+    import flash.utils.*;
+    import flash.media.*;
+    import flash.filters.*;
+    import adobe.utils.*;
+    import flash.accessibility.*;
+    import flash.desktop.*;
+    import flash.errors.*;
+    import flash.external.*;
+    import flash.globalization.*;
+    import flash.net.*;
+    import flash.net.drm.*;
+    import flash.printing.*;
+    import flash.profiler.*;
+    import flash.sampler.*;
+    import flash.sensors.*;
+    import flash.system.*;
+    import flash.text.*;
+    import flash.text.ime.*;
+    import flash.text.engine.*;
+    import flash.ui.*;
+    import flash.xml.*;
+
+    public dynamic class kirby_item_64 extends MovieClip 
+    {
+
+        public var attackBox:MovieClip;
+        public var hatBox:MovieClip;
+        public var hitBox:MovieClip;
+        public var itemBox:MovieClip;
+        public var self:*;
+        public var xframe:String;
+
+        public function kirby_item_64()
+        {
+            addFrameScript(0, this.frame1, 5, this.frame6, 6, this.frame7, 9, this.frame10, 10, this.frame11, 14, this.frame15, 18, this.frame19, 28, this.frame29, 29, this.frame30, 31, this.frame32, 34, this.frame35, 35, this.frame36, 40, this.frame41, 50, this.frame51, 62, this.frame63, 93, this.frame94, 95, this.frame96, 97, this.frame98, 98, this.frame99, 111, this.frame112, 120, this.frame121, 122, this.frame123);
+        }
+
+        internal function frame1():*
+        {
+            this.self = SSF2API.getCharacter(this);
+            this.xframe = null;
+        }
+
+        internal function frame6():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame7():*
+        {
+            this.xframe = "charging";
+        }
+
+        internal function frame10():*
+        {
+            gotoAndPlay("fan2");
+        }
+
+        internal function frame11():*
+        {
+            this.xframe = "attack";
+        }
+
+        internal function frame15():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame19():*
+        {
+            this.self.playAttackSound(1);
+        }
+
+        internal function frame29():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame30():*
+        {
+            this.xframe = null;
+        }
+
+        internal function frame32():*
+        {
+            this.xframe = "charging";
+        }
+
+        internal function frame35():*
+        {
+            gotoAndPlay("beamsword2_charge");
+        }
+
+        internal function frame36():*
+        {
+            this.xframe = "attack";
+            if (this.self.getItem().getItemStat("linkage_id") != "starrod")
+            {
+                this.self.playAttackSound(1);
+            };
+        }
+
+        internal function frame41():*
+        {
+            if (((this.self.getItem().getUses() <= this.self.getItem().getItemStat("uses_max")) && (this.self.getItem().getItemStat("linkage_id") == "starrod")))
+            {
+                this.self.getItem().fireProjectile("starrod_star");
+                SSF2API.print(("Uses left: " + (this.self.getItem().getItemStat("uses_max") - this.self.getItem().getUses())));
+                this.self.playAttackSound(1);
+            }
+            else
+            {
+                if (this.self.getItem().getItemStat("linkage_id") == "starrod")
+                {
+                    SSF2API.print("Star Rod is empty, firing failed!");
+                };
+            };
+        }
+
+        internal function frame51():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame63():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame94():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame96():*
+        {
+            if (this.self.getItem().getUses() <= this.self.getItem().getItemStat("uses_max"))
+            {
+                this.self.getItem().fireProjectile("bullet", 5, -21);
+                SSF2API.print(("Uses left: " + (this.self.getItem().getItemStat("uses_max") - this.self.getItem().getUses())));
+                this.self.playAttackSound(1);
+            }
+            else
+            {
+                SSF2API.print("Raygun is empty, firing failed!");
+                this.self.playAttackSound(2);
+            };
+        }
+
+        internal function frame98():*
+        {
+            this.self.endAttack();
+        }
+
+        internal function frame99():*
+        {
+            SSF2API.addEventListener(this.self, SSF2Event.GROUND_TOUCH, this.self.toLand);
+        }
+
+        internal function frame112():*
+        {
+            this.gotoAndPlay("cuccoloop");
+        }
+
+        internal function frame121():*
+        {
+            if (this.self.getItem() != null)
+            {
+                if (((this.self.getItem().getItemStat("linkage_id") == "energytank") && (this.self.getDamage() > 0)))
+                {
+                    this.gotoAndPlay("assistloop");
+                };
+            };
+        }
+
+        internal function frame123():*
+        {
+            this.self.endAttack();
+        }
+
+
+    }
+}//package kirby_fla
+
