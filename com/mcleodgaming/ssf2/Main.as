@@ -1146,7 +1146,7 @@
       public static function getPrevExpansionCharacter(param1:Number) : Number
       {
          param1 = param1 - 1;
-         if(param1 < m_expansionData.length)
+         if(param1 < 0)
          {
             param1 = m_expansionData.length - 1;
          }
