@@ -198,6 +198,14 @@
         private var m_replayData:ReplayData;
         private var m_logging:Boolean;
         private var m_logText:String;
+        private var m_timeEffect:int = 0; // 0:none,1:stop,2:slow
+        private var m_timeFrames:int = 0;
+        private var m_timeOwner:Character;
+        private var m_timeAffectOwner:Boolean = false;
+        private var m_timeAffectTeam:Boolean = true;
+        private var m_timeAffectProjectiles:Boolean = true;
+        private var m_timePriority:int = 0;
+        private var m_timeSlowFactor:Number = 1;
 
         public function StageData(_arg_1:Controller, _arg_2:Controller, _arg_3:Controller, _arg_4:Controller, _arg_5:MovieClip, _arg_6:MovieClip, _arg_7:MovieClip, _arg_8:Object, _arg_9:Game, _arg_10:SoundQueue, _arg_11:String, _arg_12:Number)
         {
@@ -1029,6 +1037,250 @@
         public function killFSCutscene():void
         {
             this.m_fsCutscene = false;
+        }
+
+        public function startTimeStop(frames:int, owner:Character = null, affectOwner:Boolean = false, affectTeam:Boolean = true, affectProjectiles:Boolean = true, priority:int = 0):void
+        {
+            this.m_timeEffect = 1;
+            this.m_timeFrames = frames;
+            this.m_timeOwner = owner;
+            this.m_timeAffectOwner = affectOwner;
+            this.m_timeAffectTeam = affectTeam;
+            this.m_timeAffectProjectiles = affectProjectiles;
+            this.m_timePriority = priority;
+            this.freezeStage();
+            this.freezeCharacters();
+            this.freezeProjectiles();
+            this.freezeItems();
+            this.freezeEffects();
+            if (this.SOUNDQUEUE)
+            {
+                this.SOUNDQUEUE.pauseAllSounds();
+            }
+        }
+
+        public function startTimeSlow(frames:int, factor:Number = 0.5, owner:Character = null, affectOwner:Boolean = false, affectTeam:Boolean = true, affectProjectiles:Boolean = true, priority:int = 0):void
+        {
+            this.m_timeEffect = 2;
+            this.m_timeFrames = frames;
+            this.m_timeOwner = owner;
+            this.m_timeAffectOwner = affectOwner;
+            this.m_timeAffectTeam = affectTeam;
+            this.m_timeAffectProjectiles = affectProjectiles;
+            this.m_timePriority = priority;
+            this.m_timeSlowFactor = factor;
+            Main.Root.stage.frameRate = (Main.FRAMERATE * factor);
+            if (this.SOUNDQUEUE)
+            {
+                this.SOUNDQUEUE.pauseAllSounds();
+            }
+        }
+
+        private function freezeCharacters():void
+        {
+            var _local1:Array = this.getPlayerArray();
+            for each (var p:Character in _local1)
+            {
+                if (p == null)
+                {
+                    continue;
+                }
+                if (!this.m_timeAffectOwner && p == this.m_timeOwner)
+                {
+                    continue;
+                }
+                if (!this.m_timeAffectTeam && this.m_timeOwner && p.Team == this.m_timeOwner.Team && p != this.m_timeOwner)
+                {
+                    continue;
+                }
+                if (p.TimePriority > this.m_timePriority)
+                {
+                    continue;
+                }
+                p.FreezePlayback = true;
+                p.killAllSpeeds();
+                if (p.MC && p.MC.stance)
+                {
+                    MovieClip(p.MC.stance).stop();
+                    Utils.recursiveMovieClipPlay(MovieClip(p.MC.stance), false);
+                }
+            }
+        }
+
+        private function freezeProjectiles():void
+        {
+            if (!this.m_timeAffectProjectiles)
+            {
+                return;
+            }
+            var list:Vector.<Projectile> = this.PROJECTILES;
+            for each (var proj:Projectile in list)
+            {
+                if (proj == null || proj.Dead)
+                {
+                    continue;
+                }
+                if (!this.m_timeAffectOwner && this.m_timeOwner && proj.PlayerID == this.m_timeOwner.ID)
+                {
+                    continue;
+                }
+                proj.setXSpeed(0);
+                proj.setYSpeed(0);
+                if (proj.Instance)
+                {
+                    proj.Instance.stop();
+                    Utils.recursiveMovieClipPlay(proj.Instance, false);
+                }
+            }
+        }
+
+        private function freezeItems():void
+        {
+            if (!this.ITEMS)
+            {
+                return;
+            }
+            var items:Vector.<Item> = this.ITEMS.ItemsInUse;
+            for each (var it:Item in items)
+            {
+                if (it == null || it.Dead)
+                {
+                    continue;
+                }
+                if (!this.m_timeAffectOwner && this.m_timeOwner && it.PlayerID == this.m_timeOwner.ID)
+                {
+                    continue;
+                }
+                if (!this.m_timeAffectTeam && this.m_timeOwner && it.TeamID == this.m_timeOwner.Team)
+                {
+                    continue;
+                }
+                it.setXSpeed(0);
+                it.setYSpeed(0);
+                if (it.ItemInstance)
+                {
+                    it.ItemInstance.stop();
+                    Utils.recursiveMovieClipPlay(it.ItemInstance, false);
+                }
+            }
+        }
+
+        private function freezeEffects():void
+        {
+            var container:MovieClip = this.STAGEEFFECTS;
+            if (!container)
+            {
+                return;
+            }
+            var i:int = 0;
+            while (i < container.numChildren)
+            {
+                var mc:MovieClip = container.getChildAt(i) as MovieClip;
+                if (mc)
+                {
+                    mc.stop();
+                    Utils.recursiveMovieClipPlay(mc, false);
+                }
+                i++;
+            }
+        }
+
+        private function freezeStage():void
+        {
+            if (this.STAGE && this.STAGE.root)
+            {
+                this.STAGE.stop();
+            }
+            if (this.StageFG && this.StageFG.root)
+            {
+                this.StageFG.stop();
+                Utils.recursiveMovieClipPlay(this.StageFG, false);
+            }
+            if (this.StageBG && this.StageBG.root)
+            {
+                this.StageBG.stop();
+                Utils.recursiveMovieClipPlay(this.StageBG, false);
+            }
+            if (this.ShadowMaskRef && this.ShadowMaskRef.root)
+            {
+                this.ShadowMaskRef.stop();
+            }
+            if (this.CAM)
+            {
+                this.CAM.pauseBG();
+            }
+        }
+
+        private function unfreezeAll():void
+        {
+            if (this.SOUNDQUEUE)
+            {
+                this.SOUNDQUEUE.unpauseAllSounds();
+            }
+            if (this.STAGE && this.STAGE.root)
+            {
+                this.STAGE.play();
+            }
+            if (this.StageFG && this.StageFG.root)
+            {
+                this.StageFG.play();
+                Utils.recursiveMovieClipPlay(this.StageFG, true);
+            }
+            if (this.StageBG && this.StageBG.root)
+            {
+                this.StageBG.play();
+                Utils.recursiveMovieClipPlay(this.StageBG, true);
+            }
+            if (this.ShadowMaskRef && this.ShadowMaskRef.root)
+            {
+                this.ShadowMaskRef.play();
+            }
+            if (this.CAM)
+            {
+                this.CAM.playBG();
+            }
+            var players:Array = this.getPlayerArray();
+            for each (var p:Character in players)
+            {
+                if (p != null)
+                {
+                    p.FreezePlayback = false;
+                }
+            }
+        }
+
+        private function updateTimeEffects():void
+        {
+            if (this.m_timeEffect == 0)
+            {
+                return;
+            }
+            if (this.m_timeEffect == 1)
+            {
+                this.m_timeFrames--;
+                this.freezeCharacters();
+                this.freezeProjectiles();
+                this.freezeItems();
+                this.freezeEffects();
+                if (this.m_timeFrames <= 0)
+                {
+                    this.unfreezeAll();
+                    this.m_timeEffect = 0;
+                }
+            }
+            else if (this.m_timeEffect == 2)
+            {
+                this.m_timeFrames--;
+                if (this.m_timeFrames <= 0)
+                {
+                    Main.Root.stage.frameRate = Main.FRAMERATE;
+                    if (this.SOUNDQUEUE)
+                    {
+                        this.SOUNDQUEUE.unpauseAllSounds();
+                    }
+                    this.m_timeEffect = 0;
+                }
+            }
         }
 
         public function lightFlash(_arg_1:Boolean=true):void
@@ -2142,6 +2394,7 @@
                 this.TIMER.frameElapse();
                 this.eventCheck();
                 this.runOnlineLog();
+                this.updateTimeEffects();
             };
             this.pauseCheck();
             var _local_1:int;

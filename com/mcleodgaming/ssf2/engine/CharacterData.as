@@ -112,6 +112,7 @@
         private var m_forceTransformID:String;
         private var m_fs_time_limit:int;
         private var m_fs_magnet:Boolean;
+        private var m_timePriority:int;
 
         public function CharacterData()
         {
@@ -214,6 +215,7 @@
             this.m_forceTransformID = null;
             this.m_fs_time_limit = 0;
             this.m_fs_magnet = false;
+            this.m_timePriority = 0;
         }
 
         public function get StatsName():String
@@ -740,6 +742,16 @@
             return (this.m_fs_magnet);
         }
 
+        public function get TimePriority():int
+        {
+            return (this.m_timePriority);
+        }
+
+        public function set TimePriority(value:int):void
+        {
+            this.m_timePriority = value;
+        }
+
         public function importData(_arg_1:Object):void
         {
             var _local_2:*;
@@ -944,6 +956,7 @@
             _local_2.forceTransformID = this.m_forceTransformID;
             _local_2.fs_time_limit = this.m_fs_time_limit;
             _local_2.fs_magnet = this.m_fs_magnet;
+            _local_2.timePriority = this.m_timePriority;
             return (_local_2);
         }
 
