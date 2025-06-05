@@ -2120,6 +2120,16 @@
             this.m_freezePlayback = _arg_1;
         }
 
+        public function get TimePriority():int
+        {
+            return (this.m_characterStats.TimePriority);
+        }
+
+        public function set TimePriority(value:int):void
+        {
+            this.m_characterStats.TimePriority = value;
+        }
+
         public function getLinkageID():String
         {
             return (this.m_characterStats.LinkageID);
